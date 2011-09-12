@@ -10,7 +10,6 @@
 $(document).ready(function(){	
 													   
 	(function ($) {			
-	
 			// The canvas element we are drawing into.      
 			var	$canvas = $('#canvas');
 			var	$canvas2 = $('#canvas2');
@@ -20,14 +19,11 @@ $(document).ready(function(){
 			var	w = $canvas[0].width, h = $canvas[0].height;		
 			var	img = new Image();	
 			
-			//half width for calculations
-			var factor = $canvas3.width();
-			
 			// A puff.
 			var	Puff = function(p) {				
 				var	opacity,
-					sy = (Math.random()*factor)>>0,
-					sx = (Math.random()*factor)>>0;
+					sy = (Math.random()*285)>>0,
+					sx = (Math.random()*285)>>0;
 				
 				this.p = p;
 						
@@ -36,12 +32,12 @@ $(document).ready(function(){
 					opacity = (Math.sin(p*0.05)*0.5);						
 					if(opacity <0) {
 						p = opacity = 0;
-						sy = (Math.random()*factor)>>0;
-						sx = (Math.random()*factor)>>0;
+						sy = (Math.random()*285)>>0;
+						sx = (Math.random()*285)>>0;
 					}												
 					this.p = p;																			
 					ctx.globalAlpha = opacity;						
-					ctx.drawImage($canvas3[0], sy+p, sy+p, factor-(p*2),factor-(p*2), 0,0, w, h);								
+					ctx.drawImage($canvas3[0], sy+p, sy+p, 285-(p*2),285-(p*2), 0,0, w, h);								
 				};
 			};
 			
@@ -80,4 +76,3 @@ $(document).ready(function(){
 		
 	})(jQuery);	 
 });
-
