@@ -232,7 +232,7 @@ GameEngine.prototype.addEntity = function(entity) {
 GameEngine.prototype.draw = function(drawCallback) {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.ctx.save();
-    this.ctx.translate(this.ctx.canvas.width/2, this.ctx.canvas.height/2);
+    //this.ctx.translate(this.ctx.canvas.width/2, this.ctx.canvas.height/2);
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
     }
@@ -294,6 +294,10 @@ Entity.prototype.drawSpriteCentered = function(ctx) {
     ctx.drawImage(this.sprite, x, y);
 }
 
+Entity.prototype.drawSpriteAtCoords = function(ctx) {
+    ctx.drawImage(this.sprite, this.x, this.y);
+}
+
 Entity.prototype.outsideScreen = function() {
     return (this.x > this.game.halfSurfaceWidth || this.x < -(this.game.halfSurfaceWidth) ||
         this.y > this.game.halfSurfaceHeight || this.y < -(this.game.halfSurfaceHeight));
@@ -319,31 +323,30 @@ Entity.prototype.rotateAndCache = function(image, angle) {
 }
 
 
-function Arrow(game, radial_distance, angle) {
+function Arrow(game, x, y, angle) {
     Entity.call(this, game);
-    this.radial_distance = radial_distance;
+ 
+    this.x = x;
+    this.y = y;
+    
     this.angle = angle;
     this.speed = 1;
     this.sprite = this.rotateAndCache(ASSET_MANAGER.getAsset('images/arrow.png'), this.angle);
     this.radius = this.sprite.height/2;
-    this.setCoords();
 }
+
 Arrow.prototype = new Entity();
 Arrow.prototype.constructor = Arrow;
 
-Arrow.prototype.setCoords = function() {
-    this.x = this.radial_distance * Math.cos(this.angle);
-    this.y = this.radial_distance * Math.sin(this.angle);
-}
-
 Arrow.prototype.update = function() {
-    
-    angle = Math.random(-1,1) * Math.random(50);
+    //random flicker effect
+    this.angle += (Math.random()*2-1) * 10 * this.game.clockTick; //Math.random(-1,1) * Math.random(360);
+    /*
     if (angle < 0) {
         angle += Math.PI * 2;
     }
-
-	this.rotate(angle);
+*/
+	this.rotate(this.angle);
 
     Entity.prototype.update.call(this);
 }
@@ -368,10 +371,8 @@ Entity.prototype.rotate = function(angle) {
 }
 
 
-
-
 Arrow.prototype.draw = function(ctx) {
-    this.drawSpriteCentered(ctx);
+    this.drawSpriteAtCoords(ctx);
     
     Entity.prototype.draw.call(this, ctx);
 }
@@ -385,7 +386,7 @@ GtugLogo.prototype = new Entity();
 GtugLogo.prototype.constructor = GtugLogo;
 
 GtugLogo.prototype.draw = function(ctx) {
-    ctx.drawImage(this.sprite, this.x - this.sprite.width/2, this.y - this.sprite.height/2);
+    ctx.drawImage(this.sprite, 0,0);
 }
 
 
@@ -401,10 +402,16 @@ Gdd2011Berlin.prototype.start = function() {
     this.gtuglogo= new GtugLogo(this);
     this.addEntity(this.gtuglogo);
 
-    this.addEntity(new Arrow(this, 0, 0 ));
-    //this.addEntity(new Arrow(this, 100, 45 ));
-    //this.addEntity(new Arrow(this, 150, 180 ));
-    //this.addEntity(new Arrow(this, 200, 180 ));
+    this.addEntity(new Arrow(this, 118, 147,0 ));
+    this.addEntity(new Arrow(this, 442, 138,0 ));
+    this.addEntity(new Arrow(this, 353, 50,0 ));
+    this.addEntity(new Arrow(this, 203, 234,0 ));
+    this.addEntity(new Arrow(this, 424, 223,0 ));
+    this.addEntity(new Arrow(this, 666, 295,0 ));
+    
+    //this.addEntity(new Arrow(this, 100, 100, 45 ));
+    //this.addEntity(new Arrow(this, 150, 100, 180 ));
+    //this.addEntity(new Arrow(this, 200, 250, 180 ));
 
     GameEngine.prototype.start.call(this);
 }
