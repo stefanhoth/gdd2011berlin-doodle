@@ -209,6 +209,7 @@ GameEngine.prototype.start = function() {
     var that = this;
     (function gameLoop() {
         that.loop();
+        
         requestAnimFrame(gameLoop, that.ctx.canvas);
     })();
 }
@@ -335,8 +336,10 @@ Entity.prototype.rotateAndCache = function(image, angle) {
     offscreenCtx.translate(0,0);
     offscreenCtx.drawImage(image, -(image.width/2), -(image.height/2));
     offscreenCtx.restore();
+    
     //offscreenCtx.strokeStyle = "red";
     //offscreenCtx.strokeRect(0,0,size,size);
+    
     return offscreenCanvas;
 }
 
@@ -346,7 +349,9 @@ Entity.prototype.rotate = function(angle) {
     var spriteCtx = this.sprite.getContext('2d');
     
     //clear canvas for redrawing
-    //spriteCtx.clearRect ( -50 , -100 , this.sprite.width +100, this.sprite.height +100);
+    spriteCtx.strokeStyle = "red";
+    spriteCtx.fillRect(0,0,size,size);
+    spriteCtx.clearRect ( 0 , 0 , size, size);
     
     spriteCtx.save();
     spriteCtx.translate(size/2, size/2);
@@ -358,17 +363,17 @@ Entity.prototype.rotate = function(angle) {
 }
 
 
-function Rotator(game, image, x, y, angle) {
+function Rotator(game, image, x, y, speed) {
     Entity.call(this, game);
  
     this.x = x;
     this.y = y;
     
-    this.angle = angle;
-    this.speed = 1;
+    this.angle = 0;
+    this.speed = speed;
     this.image = image;
     this.drawn = false;
-    this.direction = (Math.random()*2-1);
+    this.direction = ( (Math.random()*2-1) > 0 ) ? -1 : 1 ;
     this.sprite = this.rotateAndCache(ASSET_MANAGER.getAsset(this.image), this.angle);
     this.radius = this.sprite.height/2;
 }
@@ -381,10 +386,10 @@ Rotator.prototype.update = function() {
     
 	if(this.image == ASSETS_IMAGE.arrow){
 	    //random flicker effect
-	    this.angle += (Math.random()*2-1) * 10 * this.game.clockTick;
-	}else if(this.image == ASSETS_IMAGE.gear_1){
+	    this.angle += (Math.random()*2-1) * 20 * this.game.clockTick;
+	}else {
 		//gears will turn normally
-		this.angle -= this.direction * 0.5 * this.game.clockTick;
+		this.angle -= this.direction * this.speed * this.game.clockTick;
 	}    
 	this.rotate(this.angle);
 
@@ -392,7 +397,7 @@ Rotator.prototype.update = function() {
 }
 
 Rotator.prototype.draw = function(ctx) {
-	this.drawSpriteAtCoords(this.game.gtuglogo.sprite.getContext("2d"));
+	this.drawSpriteAtCoords(ctx);
     Entity.prototype.draw.call(this, ctx);
 }
 
@@ -421,19 +426,19 @@ Gdd2011Berlin.prototype.constructor = Gdd2011Berlin;
 Gdd2011Berlin.prototype.start = function() {
     this.gtuglogo= new GtugLogo(this);
 
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_1 ,50, 50,0 ));
-    //this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_2 ,150, 50,0 ));
-    //this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_3 ,250, 50,0 ));
-    //this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_4 ,350, 50,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_1 ,230, 215,2 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_2 ,240, 105,1 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_3 ,340, 210,2 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_4 ,410, 160,1 ));
 
     this.addEntity(this.gtuglogo);
     
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow ,118, 147,0 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138,23 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 353, 50,65 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 203, 234,90 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223,23 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,153 ));    
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 353, 50,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 203, 234,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,0 ));    
 
     GameEngine.prototype.start.call(this);
 }
