@@ -17,6 +17,16 @@ limitations under the License.
 
  */
 
+ASSETS_IMAGE ={
+	gtuglogo: 	"images/doodle.png",
+	arrow: 		"images/arrow.png",
+	cloud_1: 	"images/wolke-1.png",
+	gear_1 : 	"images/zahnrad-1.png",
+	gear_2 : 	"images/zahnrad-2.png",
+	gear_3 : 	"images/zahnrad-3.png",
+	gear_4 : 	"images/zahnrad-4.png"
+}
+
 
 window.requestAnimFrame = (function(){
       return  window.requestAnimationFrame       ||
@@ -303,7 +313,15 @@ Entity.prototype.outsideScreen = function() {
         this.y > this.game.halfSurfaceHeight || this.y < -(this.game.halfSurfaceHeight));
 }
 
-//HERE
+Entity.prototype.cache = function(image) {
+    var offscreenCanvas = document.createElement('canvas');
+    var size = Math.max(image.width, image.height);
+    offscreenCanvas.width = size;
+    offscreenCanvas.height = size;
+    var offscreenCtx = offscreenCanvas.getContext('2d');
+    offscreenCtx.drawImage(image, 0, 0);
+    return offscreenCanvas;	
+}	
 
 Entity.prototype.rotateAndCache = function(image, angle) {
     var offscreenCanvas = document.createElement('canvas');
@@ -313,7 +331,7 @@ Entity.prototype.rotateAndCache = function(image, angle) {
     var offscreenCtx = offscreenCanvas.getContext('2d');
     offscreenCtx.save();
     offscreenCtx.translate(size/2, size/2);
-    offscreenCtx.rotate(angle + Math.PI/2);
+    offscreenCtx.rotate(angle);
     offscreenCtx.translate(0,0);
     offscreenCtx.drawImage(image, -(image.width/2), -(image.height/2));
     offscreenCtx.restore();
@@ -322,8 +340,25 @@ Entity.prototype.rotateAndCache = function(image, angle) {
     return offscreenCanvas;
 }
 
+Entity.prototype.rotate = function(angle) {
+    
+    var size = Math.max(this.sprite.height, this.sprite.width);
+    var spriteCtx = this.sprite.getContext('2d');
+    
+    //clear canvas for redrawing
+    //spriteCtx.clearRect ( -50 , -100 , this.sprite.width +100, this.sprite.height +100);
+    
+    spriteCtx.save();
+    spriteCtx.translate(size/2, size/2);
+    spriteCtx.rotate(angle + Math.PI/2);
+    spriteCtx.translate(0,0);
+    spriteCtx.drawImage(ASSET_MANAGER.getAsset(this.image), -(this.sprite.width/2), -(this.sprite.height/2));
+    spriteCtx.restore();
+    
+}
 
-function Arrow(game, x, y, angle) {
+
+function Rotator(game, image, x, y, angle) {
     Entity.call(this, game);
  
     this.x = x;
@@ -331,56 +366,31 @@ function Arrow(game, x, y, angle) {
     
     this.angle = angle;
     this.speed = 1;
-    this.sprite = this.rotateAndCache(ASSET_MANAGER.getAsset('images/arrow.png'), this.angle);
+    this.image = image;
+    this.sprite = this.rotateAndCache(ASSET_MANAGER.getAsset(this.image), this.angle);
     this.radius = this.sprite.height/2;
 }
 
-Arrow.prototype = new Entity();
-Arrow.prototype.constructor = Arrow;
+Rotator.prototype = new Entity();
+Rotator.prototype.constructor = Rotator;
 
-Arrow.prototype.update = function() {
+Rotator.prototype.update = function() {
     //random flicker effect
-    this.angle += (Math.random()*2-1) * 10 * this.game.clockTick; //Math.random(-1,1) * Math.random(360);
-    /*
-    if (angle < 0) {
-        angle += Math.PI * 2;
-    }
-*/
+    this.angle += (Math.random()*2-1) * 10 * this.game.clockTick;;
 	this.rotate(this.angle);
 
     Entity.prototype.update.call(this);
 }
 
-
-Entity.prototype.rotate = function(angle) {
-    
-    var size = Math.max(this.sprite.height, this.sprite.width);
-    var spriteCtx = this.sprite.getContext('2d');
-    
-    //clear canvas for redrawing
-    spriteCtx.clearRect ( 0 , 0 , this.sprite.width, this.sprite.height);
-    
-    spriteCtx.save();
-    spriteCtx.translate(size/2, size/2);
-    spriteCtx.rotate(angle + Math.PI/2);
-    spriteCtx.translate(0,0);
-    spriteCtx.drawImage(ASSET_MANAGER.getAsset('images/arrow.png'), -(this.sprite.width/2), -(this.sprite.height/2));
-    spriteCtx.restore();
-    //offscreenCtx.strokeStyle = "red";
-    //offscreenCtx.strokeRect(0,0,size,size);
-}
-
-
-Arrow.prototype.draw = function(ctx) {
-    this.drawSpriteAtCoords(ctx);
+Rotator.prototype.draw = function(ctx) {
+    this.drawSpriteAtCoords(this.game.gtuglogo.sprite.getContext("2d"));
     
     Entity.prototype.draw.call(this, ctx);
 }
 
-
 function GtugLogo(game) {
     Entity.call(this, game, 0, 0);
-    this.sprite = ASSET_MANAGER.getAsset('images/doodle-transparent.png');
+    this.sprite = this.cache(ASSET_MANAGER.getAsset(ASSETS_IMAGE.gtuglogo),0);
 }
 GtugLogo.prototype = new Entity();
 GtugLogo.prototype.constructor = GtugLogo;
@@ -389,7 +399,9 @@ GtugLogo.prototype.draw = function(ctx) {
     ctx.drawImage(this.sprite, 0,0);
 }
 
-
+GtugLogo.prototype.getOffset = function() {
+	return {x: this.x, y: this.y};
+};
 
 function Gdd2011Berlin() {
     GameEngine.call(this);
@@ -402,16 +414,14 @@ Gdd2011Berlin.prototype.start = function() {
     this.gtuglogo= new GtugLogo(this);
     this.addEntity(this.gtuglogo);
 
-    this.addEntity(new Arrow(this, 118, 147,0 ));
-    this.addEntity(new Arrow(this, 442, 138,0 ));
-    this.addEntity(new Arrow(this, 353, 50,0 ));
-    this.addEntity(new Arrow(this, 203, 234,0 ));
-    this.addEntity(new Arrow(this, 424, 223,0 ));
-    this.addEntity(new Arrow(this, 666, 295,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_1 ,50, 50,0 ));
     
-    //this.addEntity(new Arrow(this, 100, 100, 45 ));
-    //this.addEntity(new Arrow(this, 150, 100, 180 ));
-    //this.addEntity(new Arrow(this, 200, 250, 180 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow ,118, 147,0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138,23 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 353, 50,65 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 203, 234,90 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223,23 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,153 ));    
 
     GameEngine.prototype.start.call(this);
 }
@@ -428,13 +438,20 @@ Gdd2011Berlin.prototype.draw = function() {
 }
 
 var canvas = document.getElementById('surface');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 var ctx = canvas.getContext('2d');
 var game = new Gdd2011Berlin();
 var ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload('images/arrow.png');
-ASSET_MANAGER.queueDownload('images/doodle-transparent.png');
-ASSET_MANAGER.queueDownload('images/wolken-zoom.png');
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gear_1);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gear_2);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gear_3);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gear_4);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.arrow);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gtuglogo);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_1);
 
 ASSET_MANAGER.downloadAll(function() {
     game.init(ctx);
