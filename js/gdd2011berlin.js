@@ -367,6 +367,8 @@ function Rotator(game, image, x, y, angle) {
     this.angle = angle;
     this.speed = 1;
     this.image = image;
+    this.drawn = false;
+    this.direction = (Math.random()*2-1);
     this.sprite = this.rotateAndCache(ASSET_MANAGER.getAsset(this.image), this.angle);
     this.radius = this.sprite.height/2;
 }
@@ -375,16 +377,22 @@ Rotator.prototype = new Entity();
 Rotator.prototype.constructor = Rotator;
 
 Rotator.prototype.update = function() {
-    //random flicker effect
-    this.angle += (Math.random()*2-1) * 10 * this.game.clockTick;;
+    
+    
+	if(this.image == ASSETS_IMAGE.arrow){
+	    //random flicker effect
+	    this.angle += (Math.random()*2-1) * 10 * this.game.clockTick;
+	}else if(this.image == ASSETS_IMAGE.gear_1){
+		//gears will turn normally
+		this.angle -= this.direction * 0.5 * this.game.clockTick;
+	}    
 	this.rotate(this.angle);
 
     Entity.prototype.update.call(this);
 }
 
 Rotator.prototype.draw = function(ctx) {
-    this.drawSpriteAtCoords(this.game.gtuglogo.sprite.getContext("2d"));
-    
+	this.drawSpriteAtCoords(this.game.gtuglogo.sprite.getContext("2d"));
     Entity.prototype.draw.call(this, ctx);
 }
 
@@ -412,9 +420,13 @@ Gdd2011Berlin.prototype.constructor = Gdd2011Berlin;
 
 Gdd2011Berlin.prototype.start = function() {
     this.gtuglogo= new GtugLogo(this);
-    this.addEntity(this.gtuglogo);
 
     this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_1 ,50, 50,0 ));
+    //this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_2 ,150, 50,0 ));
+    //this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_3 ,250, 50,0 ));
+    //this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_4 ,350, 50,0 ));
+
+    this.addEntity(this.gtuglogo);
     
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow ,118, 147,0 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138,23 ));
@@ -433,7 +445,7 @@ Gdd2011Berlin.prototype.update = function() {
 
 Gdd2011Berlin.prototype.draw = function() {
     GameEngine.prototype.draw.call(this, function(game) {
-    	
+    	//do nothing
     });
 }
 
