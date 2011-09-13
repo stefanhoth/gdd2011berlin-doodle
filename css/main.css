@@ -2,13 +2,14 @@
 body{
 	margin: 0;
 	padding: 0;
-	background-image: url(../images/clouds_bg_smaller.jpg);
+	background-image: url(../images/clouds_bg_less_higher.jpg);
 	background-position: top center;
 	background-color: #FFFFFF;
 	background-repeat: no-repeat;
 }
 
 #container{
+	width: 100%;
 }
 
 #main_draw{
@@ -21,3 +22,11 @@ body{
 	top: -10000px;
 	left: 0;	
 }
+
+
+#surface{
+	margin: auto;
+	width: auto;
+	height: auto;
+}
+
