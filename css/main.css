@@ -2,12 +2,22 @@
 body{
 	margin: 0;
 	padding: 0;
+	background-image: url(../images/clouds_bg_smaller.jpg);
+	background-position: top center;
+	background-color: #FFFFFF;
+	background-repeat: no-repeat;
 }
 
 #container{
-	width: 100%;
-	height:100%;
-	background-image: url(../images/template.jpg);
-	background-position: top center;
 }
 
+#main_draw{
+	width: 100%;
+	height: 100%;
+}
+
+#gtug-logo{
+	position: absolute;
+	top: -10000px;
+	left: 0;	
+}
