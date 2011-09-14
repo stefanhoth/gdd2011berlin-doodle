@@ -244,7 +244,7 @@ GameEngine.prototype.addEntity = function(entity) {
 GameEngine.prototype.draw = function(drawCallback) {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.ctx.save();
-    //this.ctx.translate(this.ctx.canvas.width/2, this.ctx.canvas.height/2);
+    this.ctx.translate(0, 100);
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
     }
@@ -433,7 +433,7 @@ Smoker.prototype.makeParticle = function(){
 	particle.velX = randomRange(-0.2,0.2);
 	particle.velY = 0;
 	particle.size = randomRange(0.1,0.2);
-	particle.maxSize = 1.8; 
+	particle.maxSize = 1.2; 
 	particle.alpha = randomRange(0.2,0.3);
 	particle.gravity = -0.1; 
 	particle.drag = 0.96;
@@ -549,9 +549,6 @@ Gdd2011Berlin.prototype.draw = function() {
 }
 
 var canvas = document.getElementById('surface');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
 var ctx = canvas.getContext('2d');
 var game = new Gdd2011Berlin();
 var ASSET_MANAGER = new AssetManager();
