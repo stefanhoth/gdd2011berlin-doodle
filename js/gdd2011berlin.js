@@ -435,7 +435,7 @@ Entity.prototype.move = function(speed, direction) {
 	if(direction == DIRECTION.up || direction == DIRECTION.down){
 		
 		//is object out of sight?
-		if ( Math.abs(this.y) > (2* this.game.overlayCanvas.height) ){
+		if ( Math.abs(this.y) > (3 * this.game.overlayCanvas.height) ){
 			this.removeFromWorld = true;
 			console.log("removed entity from world");
 		}
@@ -443,7 +443,7 @@ Entity.prototype.move = function(speed, direction) {
 	}else if(direction == DIRECTION.left || direction == DIRECTION.right){
 
 		//is object out of sight?
-		if ( Math.abs(this.x) > (2* this.game.overlayCanvas.width) ){
+		if ( Math.abs(this.x) > (3 * this.game.overlayCanvas.width) ){
 			this.removeFromWorld = true;
 			console.log("removed entity from world");
 		}
@@ -656,8 +656,11 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Smoker(this, 170,-70,0));    
     this.addEntity(new Smoker(this, 610,-75,0));    
 
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, 0, 0, DIRECTION.right, 90 ), true);
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 600, 200, DIRECTION.left, 30 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -100, 0, DIRECTION.right, 90 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 800, 200, DIRECTION.left, 30 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -1000, 30, DIRECTION.right, 100 ), true);
+    
+    
 
     GameEngine.prototype.start.call(this);
 }
