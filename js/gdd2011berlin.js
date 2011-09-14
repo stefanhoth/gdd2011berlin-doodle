@@ -21,11 +21,19 @@ ASSETS_IMAGE ={
 	gtuglogo: 	"images/doodle.png",
 	arrow: 		"images/arrow.png",
 	cloud_1: 	"images/wolke-1.png",
+	cloud_2: 	"images/wolke-2.png",
 	gear_1 : 	"images/zahnrad-1.png",
 	gear_2 : 	"images/zahnrad-2.png",
 	gear_3 : 	"images/zahnrad-3.png",
 	gear_4 : 	"images/zahnrad-4.png",
 	smoke  : 	"images/ParticleSmoke.png"
+}
+
+DIRECTION = {
+	up: "up",
+	down: "down",
+	left: "left",
+	right: "right"
 }
 
 
@@ -192,6 +200,10 @@ function GameEngine() {
     this.surfaceHeight = null;
     this.halfSurfaceWidth = null;
     this.halfSurfaceHeight = null;
+    this.halfSurfaceHeight = null;
+    
+    this.overlayCanvas = null;
+	this.overlayCtx  = null;
 }
 
 GameEngine.prototype.init = function(ctx) {
@@ -201,6 +213,10 @@ GameEngine.prototype.init = function(ctx) {
     this.halfSurfaceWidth = this.surfaceWidth/2;
     this.halfSurfaceHeight = this.surfaceHeight/2;
     this.startInput();
+    
+    this.createOverlay();
+	this.resizeOverlay();    
+    window.onresize = this.resizeOverlay;
     
     console.log('game initialized');
 }
@@ -237,16 +253,30 @@ GameEngine.prototype.startInput = function() {
     console.log('Input started');
 }
 
-GameEngine.prototype.addEntity = function(entity) {
+GameEngine.prototype.addEntity = function(entity, onOverlay) {
+	
+	if(onOverlay == true){
+		entity.onOverlay = true;
+	}
     this.entities.push(entity);
 }
 
 GameEngine.prototype.draw = function(drawCallback) {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.resizeOverlay();
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height);
+    
     this.ctx.save();
     this.ctx.translate(0, 100);
     for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].draw(this.ctx);
+    	
+    	ctx = null;
+    	if(this.entities[i].onOverlay){
+    		ctx = this.overlayCtx;
+    	}else{
+    		ctx = this.ctx;
+    	}
+        this.entities[i].draw(ctx);
     }
     if (drawCallback) {
         drawCallback(this);
@@ -279,12 +309,38 @@ GameEngine.prototype.loop = function() {
     this.click = null;
 }
 
+GameEngine.prototype.createOverlay = function(){
+	
+	// canvas element and 2D context
+	this.overlayCanvas = document.createElement( 'canvas' );
+	//this.overlayCanvas.style.border = "1px solid #FF0000";
+	this.overlayCtx = this.overlayCanvas.getContext( '2d' );
+	
+	container = document.createElement( 'div' );
+	container.style.position = "absolute";
+	container.style.top = "0";
+	container.style.left = "0";
+	container.style.zIndex = "999";
+
+	document.body.appendChild( container );
+	container.appendChild(this.overlayCanvas); 
+}
+
+GameEngine.prototype.resizeOverlay = function(){
+
+	//I know it's bad design @global var, I'm sorry
+	game.overlayCanvas.width = window.innerWidth; 
+	game.overlayCanvas.height = window.innerHeight;
+}
+
+
 
 function Entity(game, x, y) {
     this.game = game;
     this.x = x;
     this.y = y;
     this.removeFromWorld = false;
+    this.onOverlay = false;
 }
 
 Entity.prototype.update = function() {
@@ -361,6 +417,73 @@ Entity.prototype.rotate = function(angle) {
     
 }
 
+Entity.prototype.move = function(speed, direction) {
+
+	factor = speed * this.game.clockTick;
+
+	if(direction == DIRECTION.up){
+		this.y += factor;
+	}else if(direction == DIRECTION.down){
+		this.y -= factor;
+	}else if(direction == DIRECTION.left){
+		this.x -= factor;
+	}else if(direction == DIRECTION.right){
+		this.x += factor;
+	}
+	
+	
+	if(direction == DIRECTION.up || direction == DIRECTION.down){
+		
+		//is object out of sight?
+		if ( Math.abs(this.y) > (2* this.game.overlayCanvas.height) ){
+			this.removeFromWorld = true;
+			console.log("removed entity from world");
+		}
+
+	}else if(direction == DIRECTION.left || direction == DIRECTION.right){
+
+		//is object out of sight?
+		if ( Math.abs(this.x) > (2* this.game.overlayCanvas.width) ){
+			this.removeFromWorld = true;
+			console.log("removed entity from world");
+		}
+		
+	}
+	
+}
+
+function Cloud(game,image,x,y,direction,speed){
+   
+   	Entity.call(this, game);
+ 	
+	this.x = x;
+	this.y = y;
+	this.image = image;
+	this.direction = direction;
+	this.speed = speed;
+	
+	this.sprite = ASSET_MANAGER.getAsset(this.image);
+	this.sprite.width = this.width;
+	this.sprite.height = this.height;
+	
+}
+
+Cloud.prototype = new Entity();
+Cloud.prototype.constructor = Cloud;
+Cloud.prototype.update = function() {
+	
+	this.move(this.speed, this.direction);
+
+    Entity.prototype.update.call(this);
+}
+
+Cloud.prototype.draw = function(ctx) {
+
+	this.drawSpriteAtCoords(ctx);
+
+    Entity.prototype.draw.call(this, ctx);
+}
+
 function Smoker(game,x,y,angle){
    
    	Entity.call(this, game);
@@ -382,7 +505,6 @@ function Smoker(game,x,y,angle){
 	this.context = this.sprite.getContext("2d");
 	
 }
-
 Smoker.prototype = new Entity();
 Smoker.prototype.constructor = Smoker;
 Smoker.prototype.update = function() {
@@ -534,6 +656,9 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Smoker(this, 170,-70,0));    
     this.addEntity(new Smoker(this, 610,-75,0));    
 
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, 0, 0, DIRECTION.right, 90 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 600, 200, DIRECTION.left, 30 ), true);
+
     GameEngine.prototype.start.call(this);
 }
 
@@ -548,6 +673,7 @@ Gdd2011Berlin.prototype.draw = function() {
     });
 }
 
+
 var canvas = document.getElementById('surface');
 var ctx = canvas.getContext('2d');
 var game = new Gdd2011Berlin();
@@ -560,9 +686,11 @@ ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gear_4);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.arrow);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gtuglogo);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_1);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_2);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.smoke);
 
 ASSET_MANAGER.downloadAll(function() {
     game.init(ctx);
+	game.createOverlay();
     game.start();
 });
