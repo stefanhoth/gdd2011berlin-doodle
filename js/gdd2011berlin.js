@@ -22,6 +22,7 @@ ASSETS_IMAGE ={
 	arrow: 		"images/arrow.png",
 	cloud_1: 	"images/wolke-1.png",
 	cloud_2: 	"images/wolke-2.png",
+	cloud_3: 	"images/wolke-3.png",
 	gear_1 : 	"images/zahnrad-1.png",
 	gear_2 : 	"images/zahnrad-2.png",
 	gear_3 : 	"images/zahnrad-3.png",
@@ -201,9 +202,10 @@ function GameEngine() {
     this.halfSurfaceWidth = null;
     this.halfSurfaceHeight = null;
     this.halfSurfaceHeight = null;
-    
+
     this.overlayCanvas = null;
 	this.overlayCtx  = null;
+	this.overlayOffset = 66;
 }
 
 GameEngine.prototype.init = function(ctx) {
@@ -318,8 +320,8 @@ GameEngine.prototype.createOverlay = function(){
 	
 	container = document.createElement( 'div' );
 	container.style.position = "absolute";
-	container.style.top = "0";
-	container.style.left = "0";
+	container.style.top = (typeof this.overlayOffset == "undefined") ? 0 : this.overlayOffset+"px";
+	container.style.left = 0;
 	container.style.zIndex = "999";
 
 	document.body.appendChild( container );
@@ -328,9 +330,11 @@ GameEngine.prototype.createOverlay = function(){
 
 GameEngine.prototype.resizeOverlay = function(){
 
+	offset = (typeof game.overlayOffset == "undefined") ? 0 : game.overlayOffset;
+
 	//I know it's bad design @global var, I'm sorry
 	game.overlayCanvas.width = window.innerWidth; 
-	game.overlayCanvas.height = window.innerHeight;
+	game.overlayCanvas.height = window.innerHeight-offset;
 }
 
 
@@ -419,6 +423,8 @@ Entity.prototype.rotate = function(angle) {
 
 Entity.prototype.move = function(speed, direction) {
 
+	this.game.resizeOverlay();
+
 	factor = speed * this.game.clockTick;
 
 	if(direction == DIRECTION.up){
@@ -431,13 +437,12 @@ Entity.prototype.move = function(speed, direction) {
 		this.x += factor;
 	}
 	
-	
 	if(direction == DIRECTION.up || direction == DIRECTION.down){
 		
 		//is object out of sight?
 		if ( Math.abs(this.y) > (3 * this.game.overlayCanvas.height) ){
 			this.removeFromWorld = true;
-			console.log("removed entity from world");
+			console.log("removed entity from world ["+this.image+"]");
 		}
 
 	}else if(direction == DIRECTION.left || direction == DIRECTION.right){
@@ -445,7 +450,7 @@ Entity.prototype.move = function(speed, direction) {
 		//is object out of sight?
 		if ( Math.abs(this.x) > (3 * this.game.overlayCanvas.width) ){
 			this.removeFromWorld = true;
-			console.log("removed entity from world");
+			console.log("removed entity from world ["+this.image+"]");
 		}
 		
 	}
@@ -656,10 +661,10 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Smoker(this, 170,-70,0));    
     this.addEntity(new Smoker(this, 610,-75,0));    
 
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -100, 0, DIRECTION.right, 90 ), true);
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 800, 200, DIRECTION.left, 30 ), true);
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -1000, 30, DIRECTION.right, 100 ), true);
-    
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -600, 0, DIRECTION.right, 90 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 1200, 140, DIRECTION.left, 30 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_3, -2000, -50, DIRECTION.right, 140 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, 2800, -50, DIRECTION.left, 90 ), true);
     
 
     GameEngine.prototype.start.call(this);
@@ -690,6 +695,7 @@ ASSET_MANAGER.queueDownload(ASSETS_IMAGE.arrow);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gtuglogo);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_1);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_2);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_3);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.smoke);
 
 ASSET_MANAGER.downloadAll(function() {
