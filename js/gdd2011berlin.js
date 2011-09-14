@@ -24,7 +24,8 @@ ASSETS_IMAGE ={
 	gear_1 : 	"images/zahnrad-1.png",
 	gear_2 : 	"images/zahnrad-2.png",
 	gear_3 : 	"images/zahnrad-3.png",
-	gear_4 : 	"images/zahnrad-4.png"
+	gear_4 : 	"images/zahnrad-4.png",
+	smoke  : 	"images/ParticleSmoke.png"
 }
 
 
@@ -349,8 +350,6 @@ Entity.prototype.rotate = function(angle) {
     var spriteCtx = this.sprite.getContext('2d');
     
     //clear canvas for redrawing
-    spriteCtx.strokeStyle = "red";
-    spriteCtx.fillRect(0,0,size,size);
     spriteCtx.clearRect ( 0 , 0 , size, size);
     
     spriteCtx.save();
@@ -360,6 +359,90 @@ Entity.prototype.rotate = function(angle) {
     spriteCtx.drawImage(ASSET_MANAGER.getAsset(this.image), -(this.sprite.width/2), -(this.sprite.height/2));
     spriteCtx.restore();
     
+}
+
+function Smoker(game,x,y,angle){
+   
+   	Entity.call(this, game);
+ 	
+	this.x = x;
+	this.y = y;
+	this.width = 90;	
+	this.height = 180;
+	this.angle = angle;
+	
+	this.particles = [];
+	this.MAX_PARTICLES = 60,
+	this.image = ASSETS_IMAGE.smoke;
+	this.particleImage = ASSET_MANAGER.getAsset(this.image);
+	
+	this.sprite = document.createElement('canvas');
+	this.sprite.width = this.width;
+	this.sprite.height = this.height;
+	this.context = this.sprite.getContext("2d");
+	
+}
+
+Smoker.prototype = new Entity();
+Smoker.prototype.constructor = Smoker;
+Smoker.prototype.update = function() {
+	
+	this.makeParticle();
+	
+	// clear the canvas
+  	this.context.clearRect(0,0, this.width, this.height);
+  	
+  	// iteratate through each particle
+	for (i=0; i<this.particles.length; i++)
+	{
+		var particle = this.particles[i]; 
+		
+		// and then update. We always render first so particle
+		// appears in the starting point.
+		particle.update();
+
+	}
+	
+    //this.context.translate(this.width/2, this.height/2);
+    this.context.rotate(this.angle);
+    //this.context.translate(0,0);
+
+    Entity.prototype.update.call(this);
+}
+
+Smoker.prototype.draw = function(ctx) {
+
+  	// itaratate through each particle
+	for (i=0; i<this.particles.length; i++)
+	{
+		var particle = this.particles[i]; 
+		
+		// render it
+		particle.render(this.context); 
+	}
+	
+	this.drawSpriteAtCoords(ctx);
+    Entity.prototype.draw.call(this, ctx);
+}
+
+Smoker.prototype.makeParticle = function(){
+			
+	// or make one where the mouse is. 
+	var particle = new ImageParticle(this.particleImage, this.width/2, this.height-10); 
+						
+	particle.velX = randomRange(-0.2,0.2);
+	particle.velY = 0;
+	particle.size = randomRange(0.1,0.2);
+	particle.maxSize = 1.8; 
+	particle.alpha = randomRange(0.2,0.3);
+	particle.gravity = -0.1; 
+	particle.drag = 0.96;
+	particle.shrink = 1.04; 
+	particle.fade = 0.004; 
+	
+	// add it to the array
+	this.particles.push(particle); 
+
 }
 
 
@@ -389,8 +472,16 @@ Rotator.prototype.update = function() {
 	    this.angle += (Math.random()*2-1) * 20 * this.game.clockTick;
 	}else {
 		//gears will turn normally
-		this.angle -= this.direction * this.speed * this.game.clockTick;
+		this.angle += this.direction * this.speed * this.game.clockTick;
 	}    
+	
+	//prevent too high numbers
+	if(this.angle > 360){
+		this.angle -= 360;
+	}else if( this.angle < -360){
+		this.angle += 360;
+	}
+	
 	this.rotate(this.angle);
 
     Entity.prototype.update.call(this);
@@ -440,6 +531,9 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223,0 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,0 ));    
 
+    this.addEntity(new Smoker(this, 170,-70,0));    
+    this.addEntity(new Smoker(this, 610,-75,0));    
+
     GameEngine.prototype.start.call(this);
 }
 
@@ -469,6 +563,7 @@ ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gear_4);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.arrow);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.gtuglogo);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_1);
+ASSET_MANAGER.queueDownload(ASSETS_IMAGE.smoke);
 
 ASSET_MANAGER.downloadAll(function() {
     game.init(ctx);
