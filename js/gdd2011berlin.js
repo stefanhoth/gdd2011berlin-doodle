@@ -642,15 +642,20 @@ Gdd2011Berlin.prototype = new GameEngine();
 Gdd2011Berlin.prototype.constructor = Gdd2011Berlin;
 
 Gdd2011Berlin.prototype.start = function() {
+    
+    //awesome as it is
     this.gtuglogo= new GtugLogo(this);
 
+	//let's have some action
     this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_1 ,230, 215,2 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_2 ,240, 105,1 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_3 ,340, 210,2 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.gear_4 ,410, 160,1 ));
 
+	//let's see it
     this.addEntity(this.gtuglogo);
     
+    //all the funny display-arrows.
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow ,118, 147,0 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138,0 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 353, 50,0 ));
@@ -658,15 +663,17 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223,0 ));
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,0 ));    
 
+	//uuuuh smokey action, so cool,ey?
     this.addEntity(new Smoker(this, 170,-70,0));    
     this.addEntity(new Smoker(this, 610,-75,0));    
 
+	//let's have some puffy clouds
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -600, 0, DIRECTION.right, 90 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 1200, 140, DIRECTION.left, 30 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_3, -2000, -50, DIRECTION.right, 140 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, 2800, -50, DIRECTION.left, 90 ), true);
     
-
+	//aaaand action!
     GameEngine.prototype.start.call(this);
 }
 
