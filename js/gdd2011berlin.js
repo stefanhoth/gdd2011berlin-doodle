@@ -720,7 +720,6 @@ Gdd2011Berlin.prototype.pause = function() {
 Gdd2011Berlin.prototype.unpause = function() {
     console.log("doodle animation has been restarted");
     this.isPaused = false;
-    this.start();
 }
 
 var canvas = document.getElementById('surface');
