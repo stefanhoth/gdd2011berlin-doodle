@@ -22,7 +22,7 @@ function ImageParticle(img, posx, posy)
 	// drag. A number between 0 and 1, closer to one is 
 	// more slippery, closer to 0 is more sticky. values
 	// below 0.6 are pretty much stuck :) 
-	this.drag = 1; 
+	this.drag = 0.6; 
 	
 	// add this to the yVel every frame to simulate gravity
 	this.gravity = 0; 
@@ -33,7 +33,7 @@ function ImageParticle(img, posx, posy)
 	this.fade = 0; 
 
 	// the amount to rotate every frame
-	this.spin = 0; 
+	this.spin = 80; 
 	// the current rotation
 	this.rotation = 0; 
 	

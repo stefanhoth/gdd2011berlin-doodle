@@ -489,15 +489,17 @@ Cloud.prototype.draw = function(ctx) {
     Entity.prototype.draw.call(this, ctx);
 }
 
-function Smoker(game,x,y,angle){
-   
+function Smoker(game,x,y,angle,smallParticles){
+
    	Entity.call(this, game);
  	
-	this.x = x;
+	this.x = x-50;
 	this.y = y;
-	this.width = 90;	
+	this.width = 180;	
 	this.height = 180;
 	this.angle = angle;
+	this.particleSize = (smallParticles == true) ? 0.99 : 1;
+	this.particleFade = (smallParticles == true) ? 1.03 : 1;
 	
 	this.particles = [];
 	this.MAX_PARTICLES = 60,
@@ -505,11 +507,22 @@ function Smoker(game,x,y,angle){
 	this.particleImage = ASSET_MANAGER.getAsset(this.image);
 	
 	this.sprite = document.createElement('canvas');
+	
 	this.sprite.width = this.width;
 	this.sprite.height = this.height;
 	this.context = this.sprite.getContext("2d");
-	
+
+	if(this.angle > 0){
+	   	this.context.translate( this.width, -this.height/4);
+	    this.context.rotate(this.angle * Math.PI/2);
+	    this.context.translate(0,0);
+	}else if(this.angle < 0){
+	   	this.context.translate( -this.width * 0.05 , this.height);
+	    this.context.rotate(this.angle * Math.PI/2);
+	    this.context.translate(0,0);
+	}
 }
+
 Smoker.prototype = new Entity();
 Smoker.prototype.constructor = Smoker;
 Smoker.prototype.update = function() {
@@ -524,16 +537,16 @@ Smoker.prototype.update = function() {
 	{
 		var particle = this.particles[i]; 
 		
+		particle.size *= this.particleSize; 
+		particle.fade *= this.particleFade;
+		
 		// and then update. We always render first so particle
 		// appears in the starting point.
 		particle.update();
 
 	}
 	
-    //this.context.translate(this.width/2, this.height/2);
-    this.context.rotate(this.angle);
-    //this.context.translate(0,0);
-
+	
     Entity.prototype.update.call(this);
 }
 
@@ -547,7 +560,7 @@ Smoker.prototype.draw = function(ctx) {
 		// render it
 		particle.render(this.context); 
 	}
-	
+
 	this.drawSpriteAtCoords(ctx);
     Entity.prototype.draw.call(this, ctx);
 }
@@ -664,15 +677,19 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,0 ));    
 
 	//uuuuh smokey action, so cool,ey?
-    this.addEntity(new Smoker(this, 170,-70,0));    
-    this.addEntity(new Smoker(this, 610,-75,0));    
+    this.addEntity(new Smoker(this, 170,-70, 0, false));    
+    this.addEntity(new Smoker(this, 610,-75, 0, false));    
+    this.addEntity(new Smoker(this, 250,195, 0.9,true));    
+    this.addEntity(new Smoker(this, 175,130, 0.99,true));    
+    this.addEntity(new Smoker(this, 395,5, 0.9,true));    
+  	this.addEntity(new Smoker(this, 500,220, -0.9,true));    
 
 	//let's have some puffy clouds
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -600, 0, DIRECTION.right, 90 ), true);
+  	this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -600, 0, DIRECTION.right, 90 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 1200, 140, DIRECTION.left, 30 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_3, -2000, -50, DIRECTION.right, 140 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, 2800, -50, DIRECTION.left, 90 ), true);
-    
+
 	//aaaand action!
     GameEngine.prototype.start.call(this);
 }
