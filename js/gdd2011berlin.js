@@ -189,8 +189,6 @@ Timer.prototype.tick = function() {
     return gameDelta;
 }
 
-
-
 function GameEngine() {
     this.entities = [];
     this.ctx = null;
@@ -209,6 +207,7 @@ function GameEngine() {
 }
 
 GameEngine.prototype.init = function(ctx) {
+	
     this.ctx = ctx;
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
@@ -219,13 +218,17 @@ GameEngine.prototype.init = function(ctx) {
     this.createOverlay();
 	this.resizeOverlay();    
     window.onresize = this.resizeOverlay;
+
+    this.isPaused = false;
     
-    console.log('game initialized');
+    console.log('doodle animation initialized');
 }
 
 GameEngine.prototype.start = function() {
-    console.log("starting game");
+
+    console.log("starting doodle animation");
     var that = this;
+    
     (function gameLoop() {
         that.loop();
         
@@ -264,6 +267,7 @@ GameEngine.prototype.addEntity = function(entity, onOverlay) {
 }
 
 GameEngine.prototype.draw = function(drawCallback) {
+	
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.resizeOverlay();
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height);
@@ -287,6 +291,7 @@ GameEngine.prototype.draw = function(drawCallback) {
 }
 
 GameEngine.prototype.update = function() {
+    
     var entitiesCount = this.entities.length;
     
     for (var i = 0; i < entitiesCount; i++) {
@@ -305,6 +310,11 @@ GameEngine.prototype.update = function() {
 }
 
 GameEngine.prototype.loop = function() {
+    
+    if(this.isPaused){
+		return;    	
+    }
+    
     this.clockTick = this.timer.tick();
     this.update();
     this.draw();
@@ -452,9 +462,7 @@ Entity.prototype.move = function(speed, direction) {
 			this.removeFromWorld = true;
 			console.log("removed entity from world ["+this.image+"]");
 		}
-		
 	}
-	
 }
 
 function Cloud(game,image,x,y,direction,speed){
@@ -585,7 +593,6 @@ Smoker.prototype.makeParticle = function(){
 
 }
 
-
 function Rotator(game, image, x, y, speed) {
     Entity.call(this, game);
  
@@ -705,6 +712,16 @@ Gdd2011Berlin.prototype.draw = function() {
     });
 }
 
+Gdd2011Berlin.prototype.pause = function() {
+    console.log("doodle animation has been paused");
+    this.isPaused = true;
+}
+
+Gdd2011Berlin.prototype.unpause = function() {
+    console.log("doodle animation has been restarted");
+    this.isPaused = false;
+    this.start();
+}
 
 var canvas = document.getElementById('surface');
 var ctx = canvas.getContext('2d');
@@ -722,8 +739,30 @@ ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_2);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.cloud_3);
 ASSET_MANAGER.queueDownload(ASSETS_IMAGE.smoke);
 
+function returnKey(evt)
+{
+	var evt  = (evt) ? evt : ((event) ? event : null);
+	var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+ 	
+ 	//console.log("Received keypress "+evt.keyCode);
+ 
+	if ((evt.keyCode == 32) ) 
+	{
+		if(game.isPaused){
+			game.unpause();
+		}else{
+			game.pause();
+		}
+	}
+}
+
 ASSET_MANAGER.downloadAll(function() {
     game.init(ctx);
 	game.createOverlay();
     game.start();
+    document.onkeypress = returnKey;
 });
+
+
+
+
