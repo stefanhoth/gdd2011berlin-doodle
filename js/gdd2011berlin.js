@@ -681,7 +681,7 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(new Smoker(this, 610,-75, 0, false));    
     this.addEntity(new Smoker(this, 250,195, 0.9,true));    
     this.addEntity(new Smoker(this, 175,130, 0.99,true));    
-    this.addEntity(new Smoker(this, 395,5, 0.9,true));    
+    this.addEntity(new Smoker(this, 395,5, 0.9,false));    
   	this.addEntity(new Smoker(this, 500,220, -0.9,true));    
 
 	//let's have some puffy clouds
