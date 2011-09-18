@@ -693,10 +693,10 @@ Gdd2011Berlin.prototype.start = function() {
   	this.addEntity(new Smoker(this, 500,220, -0.9,true));    
 
 	//let's have some puffy clouds
-  	this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, -600, 0, DIRECTION.right, 90 ), true);
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2, 1200, 140, DIRECTION.left, 30 ), true);
+  	this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1,  -600,   0, DIRECTION.right,  90 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_2,  1200, 140, DIRECTION.left,   30 ), true);
     this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_3, -2000, -50, DIRECTION.right, 140 ), true);
-    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1, 2800, -50, DIRECTION.left, 90 ), true);
+    this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1,  2800, -50, DIRECTION.left,   90 ), true);
 
 	//aaaand action!
     GameEngine.prototype.start.call(this);
