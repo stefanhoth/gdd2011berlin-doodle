@@ -677,20 +677,20 @@ Gdd2011Berlin.prototype.start = function() {
     this.addEntity(this.gtuglogo);
     
     //all the funny display-arrows.
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow ,118, 147,0 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138,0 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 353, 50,0 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 203, 234,0 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223,0 ));
-    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295,0 ));    
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow ,118, 147, 0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 442, 138, 0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 353,  50, 0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 203, 234, 0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 424, 223, 0 ));
+    this.addEntity(new Rotator(this, ASSETS_IMAGE.arrow, 666, 295, 0 ));    
 
 	//uuuuh smokey action, so cool,ey?
-    this.addEntity(new Smoker(this, 170,-70, 0, false));    
-    this.addEntity(new Smoker(this, 610,-75, 0, false));    
-    this.addEntity(new Smoker(this, 250,195, 0.9,true));    
-    this.addEntity(new Smoker(this, 175,130, 0.99,true));    
-    this.addEntity(new Smoker(this, 395,5, 0.9,false));    
-  	this.addEntity(new Smoker(this, 500,220, -0.9,true));    
+    this.addEntity(new Smoker(this, 170, -70,    0, false));    
+    this.addEntity(new Smoker(this, 610, -75,    0, false));    
+    this.addEntity(new Smoker(this, 250, 195,  0.9, true));    
+    this.addEntity(new Smoker(this, 175, 130, 0.99, true));    
+    this.addEntity(new Smoker(this, 395,   5,  0.9, false));    
+  	this.addEntity(new Smoker(this, 500, 220, -0.9, true));    
 
 	//let's have some puffy clouds
   	this.addEntity(new Cloud(this, ASSETS_IMAGE.cloud_1,  -600,   0, DIRECTION.right,  90 ), true);
